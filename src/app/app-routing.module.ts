@@ -4,6 +4,7 @@ import {SingleProductSortComponent} from './components/single-product-sort/singl
 import {MultiJobsSearchComponent} from './components/multi-jobs-search/multi-jobs-search.component';
 import {SingleProductFilterComponent} from './components/single-product-filter/single-product-filter.component';
 import {MultiCarsFilterComponent} from './components/multi-cars-filter/multi-cars-filter.component';
+import {SingleProductsLimitComponent} from './components/single-products-limit/single-products-limit.component';
 import {SingleProductSortComponentModule} from './components/single-product-sort/single-product-sort.component-module';
 import {ProductsServiceModule} from './services/products.service-module';
 import {MultiJobsSearchComponentModule} from './components/multi-jobs-search/multi-jobs-search.component-module';
@@ -14,6 +15,9 @@ import {
 import {CategoriesServiceModule} from './services/categories.service-module';
 import {MultiCarsFilterComponentModule} from './components/multi-cars-filter/multi-cars-filter.component-module';
 import {CarsServiceModule} from './services/cars.service-module';
+import {
+  SingleProductsLimitComponentModule
+} from './components/single-products-limit/single-products-limit.component-module';
 
 @NgModule({
   imports: [RouterModule.forRoot([{
@@ -25,7 +29,10 @@ import {CarsServiceModule} from './services/cars.service-module';
   }, {path: 'single-product-filter', component: SingleProductFilterComponent}, {
     path: 'multi-cars-filter',
     component: MultiCarsFilterComponent
-  }]), SingleProductSortComponentModule, ProductsServiceModule, MultiJobsSearchComponentModule, JobPostsServiceModule, SingleProductFilterComponentModule, CategoriesServiceModule, MultiCarsFilterComponentModule, CarsServiceModule],
+  }, {
+    path: 'limit-products',
+    component: SingleProductsLimitComponent
+  }]), SingleProductSortComponentModule, ProductsServiceModule, MultiJobsSearchComponentModule, JobPostsServiceModule, SingleProductFilterComponentModule, CategoriesServiceModule, MultiCarsFilterComponentModule, CarsServiceModule, SingleProductsLimitComponentModule],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
