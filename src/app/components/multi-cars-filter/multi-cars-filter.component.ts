@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, take} from 'rxjs';
 import { BrandModel } from '../../models/brand.model';
 import { ComfortFeatureModel } from '../../models/comfort-feature.model';
 import { CarModel } from '../../models/car.model';
 import { CarsService } from '../../services/cars.service';
-import {map} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 
 interface filteredData {
   brands: Set<string>,
@@ -36,13 +36,19 @@ export class MultiCarsFilterComponent {
     ))
   )
 
-  onBrandSelected(id: string, isSelected: boolean) {
-    this._router.navigate([],{
-      queryParams: {
-        brands: id,
-      }
-    })
-    console.log(isSelected, id)
+  onBrandSelected(brand: BrandModel, isSelected: boolean) {
+    this.filteredList$.pipe(
+      take(1),
+      tap((data) => {
+        const brandParam = data.brands;
+        isSelected ? brandParam.add(brand.id) : brandParam.delete(brand.id);
+        this._router.navigate([], {
+          queryParams: {
+            brands: [...brandParam].join(',')
+          }
+        })
+      })
+    ).subscribe()
   }
   constructor(private _carsService: CarsService, private _activatedRoute: ActivatedRoute, private _router: Router) {
   }
