@@ -18,13 +18,12 @@ interface filteredData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiCarsFilterComponent {
-
   readonly brandsList$: Observable<BrandModel[]> = this._carsService.getBrands();
   readonly comfortFeaturesList$: Observable<ComfortFeatureModel[]> = this._carsService.getComfortFeatures();
   readonly filteredList$: Observable<filteredData> = this._activatedRoute.queryParams.pipe(
-    map((params) => ({
-        brands: new Set<string>(params['brands'] ? params['brands'].split(',') : []),
-        comfortFeatures: new Set<string>(params['comfort-features'] ? params['comfort-features'].split(',') : [])
+    map((params) : filteredData => ({
+        brands: new Set<string>(params['brands'] === undefined ? [] :  params['brands'].split(',') ),
+        comfortFeatures: new Set<string>(params['comfort-features'] === undefined ? [] : params['comfort-features'].split(','))
     }))
   );
   readonly carsList$: Observable<CarModel[]> = combineLatest([
@@ -33,10 +32,19 @@ export class MultiCarsFilterComponent {
   ]).pipe(
     map(([cars, list]) =>
       cars.filter(car => list.brands.size === 0 || list.brands.has(car.brandId)
-      ).filter(car => list.comfortFeatures.size === 0 || list.comfortFeatures.has(car.comfortFeatureIds))
-    )
+      ).filter(car => list.comfortFeatures.size === 0 || [car.comfortFeatureIds].filter((id) => list.comfortFeatures.has(id))
+    ))
   )
 
+  onBrandSelected(id: string, isSelected: boolean) {
+    this._router.navigate([],{
+      queryParams: {
+        brands: id,
+      }
+    })
+    console.log(isSelected, id)
+  }
   constructor(private _carsService: CarsService, private _activatedRoute: ActivatedRoute, private _router: Router) {
   }
+
 }

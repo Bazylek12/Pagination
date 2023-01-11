@@ -4,9 +4,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MultiCarsFilterComponent } from './multi-cars-filter.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
-  imports: [MatCardModule, MatListModule, CommonModule, MatTableModule],
+  imports: [MatCardModule, MatListModule, CommonModule, MatTableModule, FormsModule],
   declarations: [MultiCarsFilterComponent],
   providers: [],
   exports: [MultiCarsFilterComponent]

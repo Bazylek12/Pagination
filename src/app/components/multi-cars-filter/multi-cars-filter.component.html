@@ -2,7 +2,7 @@
   <mat-card-title>Brands</mat-card-title>
   <mat-card-content>
     <mat-selection-list role="list" style='display: flex;'>
-      <mat-list-option role="listitem" *ngFor="let item of brandsList$ | async">
+      <mat-list-option role="listitem" *ngFor="let item of brandsList$ | async" [value]="item.id" (selectedChange)="onBrandSelected(item.id, $event)">
         {{ item.name }}
       </mat-list-option>
     </mat-selection-list>
