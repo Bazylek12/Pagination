@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {combineLatest, Observable, take} from 'rxjs';
+import {combineLatest, Observable, shareReplay, take} from 'rxjs';
 import {BrandModel} from '../../models/brand.model';
 import {ComfortFeatureModel} from '../../models/comfort-feature.model';
 import {CarModel} from '../../models/car.model';
@@ -25,7 +25,8 @@ export class MultiCarsFilterComponent {
     map((params): filteredData => ({
       brands: new Set<string>(params['brands'] === undefined ? [] : params['brands'].split(',')),
       comfortFeatures: new Set<string>(params['comfort-features'] === undefined ? [] : params['comfort-features'].split(','))
-    }))
+    })),
+    shareReplay(1)
   );
   readonly carsList$: Observable<CarModel[]> = combineLatest([
     this._carsService.getCars(),
@@ -34,8 +35,8 @@ export class MultiCarsFilterComponent {
     map(([cars, list]) =>
       cars
         .filter(car => list.brands.size === 0 || list.brands.has(car.brandId))
-        // .filter(car => list.comfortFeatures.size === 0 ||
-        //   car.comfortFeatureIds.filter((id: string) => list.comfortFeatures.has(id).length === list.comfortFeatures.size))
+        .filter(car => list.comfortFeatures.size === 0 ||
+          car.comfortFeatureIds.find((id) => list.comfortFeatures.has(id)))
     )
   )
 
@@ -47,7 +48,24 @@ export class MultiCarsFilterComponent {
         isSelected ? brandParam.add(brand.id) : brandParam.delete(brand.id);
         this._router.navigate([], {
           queryParams: {
-            brands: brandParam.size === 0 ? brandParam.clear() : [...brandParam].join(',')
+            brands: brandParam.size === 0 ? brandParam.clear() : [...brandParam].sort().join(','),
+            'comfort-features': data.comfortFeatures
+          }
+        })
+      })
+    ).subscribe()
+  }
+
+  onFeaturesSelected(feature: BrandModel, isSelected: boolean) {
+    this.filteredList$.pipe(
+      take(1),
+      tap((data) => {
+        const featureParam = data.comfortFeatures;
+        isSelected ? featureParam.add(feature.id) : featureParam.delete(feature.id);
+        this._router.navigate([], {
+          queryParams: {
+            brands: data.brands,
+            ['comfort-features'] : featureParam.size === 0 ? featureParam.clear() : [...featureParam].sort().join(',')
           }
         })
       })
