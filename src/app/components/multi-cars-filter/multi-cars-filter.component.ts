@@ -45,11 +45,12 @@ export class MultiCarsFilterComponent {
       take(1),
       tap((data) => {
         const brandParam = data.brands;
+        const featureParam = data.comfortFeatures;
         isSelected ? brandParam.add(brand.id) : brandParam.delete(brand.id);
         this._router.navigate([], {
           queryParams: {
             brands: brandParam.size === 0 ? brandParam.clear() : [...brandParam].sort().join(','),
-            'comfort-features': data.comfortFeatures
+            'comfort-features': featureParam.size === 0 ? featureParam.clear() : [...featureParam].sort().join(','),
           }
         })
       })
@@ -61,10 +62,11 @@ export class MultiCarsFilterComponent {
       take(1),
       tap((data) => {
         const featureParam = data.comfortFeatures;
+        const dataParams = data.brands;
         isSelected ? featureParam.add(feature.id) : featureParam.delete(feature.id);
         this._router.navigate([], {
           queryParams: {
-            brands: data.brands,
+             brands: dataParams.size === 0 ? dataParams.clear() : [...dataParams].sort().join(','),
             ['comfort-features'] : featureParam.size === 0 ? featureParam.clear() : [...featureParam].sort().join(',')
           }
         })
