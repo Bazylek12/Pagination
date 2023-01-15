@@ -19,13 +19,12 @@ interface queryModel {
 })
 export class PaginatorCitiesComponent {
   readonly pageSizes$: Observable<number[]> = of([5, 10, 15])
-  readonly citiesList$: Observable<CityModel[]> = this._cititesService.getAll();
+  readonly citiesList$: Observable<CityModel[]> = this._cititesService.getAll().pipe(shareReplay(1));
   readonly queryParams$: Observable<queryModel> = this._activatedRoute.queryParams.pipe(
     map((params) => ({
       pageSize: params['pageSize'] ? +params['pageSize'] : 5,
       pageNumber: params['pageNumber'] ? +params['pageNumber'] : 1,
     })),
-    shareReplay(1)
   );
   readonly pagesList$: Observable<number[]> = combineLatest([
     this.citiesList$,
@@ -38,7 +37,7 @@ export class PaginatorCitiesComponent {
         }
         return pages;
       }
-    )
+    ),
   )
   readonly paginatedCities$: Observable<CityModel[]> = combineLatest([
     this.citiesList$,
@@ -46,7 +45,7 @@ export class PaginatorCitiesComponent {
   ]).pipe(
     map(([cities, params]) =>
       cities.slice((params.pageNumber - 1) * params.pageSize, params.pageSize * params.pageNumber)
-    )
+    ),
   )
 
   constructor(private _cititesService: CititesService, private _activatedRoute: ActivatedRoute, private _router: Router
@@ -69,17 +68,17 @@ export class PaginatorCitiesComponent {
 
   onPageSizeChange(event: MatSelectionListChange): void {
     combineLatest([this.queryParams$, this.citiesList$])
-   .pipe(
-      take(1),
-      tap(([params, cities]) =>
-        this._router.navigate([], {
-          queryParams: {
-            pageNumber: Math.min(Math.ceil(cities.length / event.options[0].value), params.pageNumber),
-            pageSize: event.options[0].value
-          }
-        })
-      )
-    ).subscribe()
+      .pipe(
+        take(1),
+        tap(([params, cities]) =>
+          this._router.navigate([], {
+            queryParams: {
+              pageNumber: Math.min(Math.ceil(cities.length / event.options[0].value), params.pageNumber),
+              pageSize: event.options[0].value
+            }
+          })
+        )
+      ).subscribe()
     console.log(event)
   }
 }
