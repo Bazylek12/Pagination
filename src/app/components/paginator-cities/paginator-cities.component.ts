@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, combineLatest, of, take} from 'rxjs';
+import {Observable, combineLatest, of, take, shareReplay} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {CityModel} from '../../models/city.model';
 import {CititesService} from '../../services/citites.service';
@@ -24,7 +24,8 @@ export class PaginatorCitiesComponent {
     map((params) => ({
       pageSize: params['pageSize'] ? +params['pageSize'] : 5,
       pageNumber: params['pageNumber'] ? +params['pageNumber'] : 1,
-    }))
+    })),
+    shareReplay(1)
   );
   readonly pagesList$: Observable<number[]> = combineLatest([
     this.citiesList$,
