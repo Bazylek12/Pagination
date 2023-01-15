@@ -1,0 +1,20 @@
+<mat-card *ngIf="queryParams$ | async as params">
+  <mat-card-title>Show cities</mat-card-title>
+  <mat-card-content>
+    <mat-selection-list role="list" style="display: flex" [multiple]="false" (selectionChange)="onPageNumberChange($event)">
+      <mat-list-option role="listitem" *ngFor="let item of pagesList$ | async" [value]="item" [selected]="item === params.pageNumber">
+        {{ item }}
+      </mat-list-option>
+    </mat-selection-list>
+    <mat-selection-list role="list" style="display: flex" [multiple]="false" (selectionChange)="onPageSizeChange($event)">
+      <mat-list-option role="listitem" *ngFor="let item of pageSizes$ | async" [value]="item" [selected]="item === params.pageSize">
+        {{ item }}
+      </mat-list-option>
+    </mat-selection-list>
+    <mat-list role="list">
+      <mat-list-item role="listitem" *ngFor="let item of paginatedCities$ | async">
+        {{ item.name }}
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>
